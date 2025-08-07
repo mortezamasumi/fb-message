@@ -18,9 +18,9 @@ class FbMessageForm
     {
         return $schema
             ->components([
-                TextInput::make('id')
-                    ->label(fn (?Model $record) => dd($record))
-                    ->visible(fn (string $operation) => $operation === 'reply'),
+                // TextInput::make('id')
+                // ->label(fn (?Model $record) => dd($record))
+                // ->visible(fn (string $operation) => $operation === 'reply'),
                 Select::make('to')
                     ->label(__('fb-message::fb-message.form.to'))
                     ->hidden(fn (string $operation) => $operation === 'reply')
