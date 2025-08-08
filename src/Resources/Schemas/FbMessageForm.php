@@ -18,31 +18,22 @@ class FbMessageForm
     {
         return $schema
             ->components([
-                // TextInput::make('id')
-                // ->label(fn (?Model $record) => dd($record))
-                // ->visible(fn (string $operation) => $operation === 'reply'),
                 Select::make('to')
                     ->label(__('fb-message::fb-message.form.to'))
-                    ->hidden(fn (string $operation) => $operation === 'reply')
                     ->relationship('availableRecipients')
                     ->multiple()
                     ->preload()
+                    ->disabledOn('reply')
                     ->required()
                     ->getOptionLabelFromRecordUsing(fn (Model $record) => $record->name)
-                    ->saveRelationshipsUsing(static function (Select $component, Model $record, $state) {
-                        $relations = [];
-
-                        $relations[Auth::id()] = [
+                    ->saveRelationshipsUsing(static function (Select $component, $state) {
+                        $relations = collect([Auth::id() => [
                             'type' => MessageType::FROM,
                             'folder' => MessageFolder::SENT,
-                        ];
-
-                        foreach ($state as $to) {
-                            $relations[$to] = [
-                                'type' => MessageType::TO,
-                                'folder' => MessageFolder::INBOX,
-                            ];
-                        }
+                        ]])->merge(collect($state)->mapWithKeys(fn ($s) => [$s => [
+                            'type' => MessageType::TO,
+                            'folder' => MessageFolder::INBOX,
+                        ]]));
 
                         $component->getRelationship()->syncWithoutDetaching($relations);
                     }),

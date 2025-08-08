@@ -18,7 +18,6 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Schema;
 use Filament\Support\Exceptions\Halt;
 use Filament\Support\Facades\FilamentView;
-use function Filament\Support\is_app_url;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -26,8 +25,9 @@ use Illuminate\Support\Str;
 use Mortezamasumi\FbMessage\Enums\MessageFolder;
 use Mortezamasumi\FbMessage\Enums\MessageType;
 use Mortezamasumi\FbMessage\Resources\FbMessageResource;
-
 use Mortezamasumi\FbMessage\Traits\HasCreateNotificationMessage;
+
+use function Filament\Support\is_app_url;
 
 /**
  * @property-read Schema $form
@@ -69,7 +69,7 @@ class ReplyMessage extends Page
 
         $this->callHook('afterFill');
 
-        $this->data['to'] = $this->original_record->from->pluck('id');
+        $this->data['to'] = $this->original_record->from->pluck('id')->toArray();
 
         $this->data['subject'] = Str::of(__('fb-message::fb-message.reply.subject_reply'))
             ->append(' : ')

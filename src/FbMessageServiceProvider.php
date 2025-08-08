@@ -5,7 +5,10 @@ namespace Mortezamasumi\FbMessage;
 use Filament\Support\Assets\Asset;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Features\SupportTesting\Testable;
+use Mortezamasumi\FbMessage\Models\FbMessage;
+use Mortezamasumi\FbMessage\Policies\FbMessagePolicy;
 use Mortezamasumi\FbMessage\Testing\TestsFbMessage;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -37,6 +40,8 @@ class FbMessageServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        Gate::policy(FbMessage::class, FbMessagePolicy::class);
+
         FilamentAsset::register(
             $this->getAssets(),
             $this->getAssetPackageName()
