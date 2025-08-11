@@ -72,7 +72,7 @@ class FbMessageResource extends Resource implements HasShieldPermissions
 
     public static function getNavigationBadge(): ?string
     {
-        return config('fb-message.resource.navigation.show_count')
+        return config('fb-message.navigation.badge')
             ? Number::format(number: static::getModel()::whereRelation('unread', 'id', Auth::id())->count(), locale: App::getLocale())
             : null;
     }
