@@ -26,9 +26,7 @@ class FbMessageServiceProvider extends PackageServiceProvider
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->publishConfigFile()
-                    ->publishMigrations()
-                    ->askToRunMigrations()
-                    ->askToStarRepoOnGitHub(':vendor_slug/:package_slug');
+                    ->publishMigrations();
             })
             ->hasConfigFile()
             ->hasMigrations($this->getMigrations())

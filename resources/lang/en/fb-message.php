@@ -1,12 +1,9 @@
 <?php
 
 return [
-    'resource' => [
-        'navigation' => [
-            'label' => 'Messages',
-            'message' => 'Message',
-            'messages' => 'Messages',
-        ],
+    'navigation' => [
+        'label' => 'Message',
+        'plural_label' => 'Messages',
     ],
     'folders' => [
         'inbox' => 'Inbox',

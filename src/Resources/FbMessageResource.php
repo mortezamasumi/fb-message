@@ -7,7 +7,9 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Number;
 use Mortezamasumi\FbMessage\Models\FbMessage;
 use Mortezamasumi\FbMessage\Resources\Pages\CreateMessage;
 use Mortezamasumi\FbMessage\Resources\Pages\ForwardMessage;
@@ -17,7 +19,8 @@ use Mortezamasumi\FbMessage\Resources\Pages\ViewMessage;
 use Mortezamasumi\FbMessage\Resources\Schemas\FbMessageForm;
 use Mortezamasumi\FbMessage\Resources\Schemas\FbMessageInfolist;
 use Mortezamasumi\FbMessage\Resources\Tables\FbMessagesTable;
-use Mortezamasumi\FbPersian\Facades\FbPersian;
+use BackedEnum;
+use UnitEnum;
 
 class FbMessageResource extends Resource implements HasShieldPermissions
 {
@@ -37,51 +40,51 @@ class FbMessageResource extends Resource implements HasShieldPermissions
         ];
     }
 
-    public static function getNavigationIcon(): ?string
-    {
-        return config('fb-message.resource.navigation.icon');
-    }
-
-    public static function getNavigationSort(): ?int
-    {
-        return config('fb-message.resource.navigation.sort');
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return __(config('fb-message.resource.navigation.label'));
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return __(config('fb-message.resource.navigation.group'));
-    }
-
     public static function getModelLabel(): string
     {
-        return __(config('fb-message.resource.navigation.model_label'));
+        return __(config('fb-message.navigation.model_label'));
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __(config('fb-message.resource.navigation.plural_model_label'));
+        return __(config('fb-message.navigation.plural_model_label'));
+    }
+
+    public static function getNavigationGroup(): string|UnitEnum|null
+    {
+        return __(config('fb-message.navigation.group'));
     }
 
     public static function getNavigationParentItem(): ?string
     {
-        return config('fb-message.resource.navigation.parent_item');
+        return __(config('fb-message.navigation.parent_item'));
     }
 
-    public static function getActiveNavigationIcon(): string|Htmlable|null
+    public static function getNavigationIcon(): string|BackedEnum|Htmlable|null
     {
-        return config('fb-message.resource.navigation.active_icon') ?? static::getNavigationIcon();
+        return config('fb-message.navigation.icon');
+    }
+
+    public static function getActiveNavigationIcon(): string|BackedEnum|Htmlable|null
+    {
+        return config('fb-message.navigation.active_icon') ?? static::getNavigationIcon();
     }
 
     public static function getNavigationBadge(): ?string
     {
         return config('fb-message.resource.navigation.show_count')
-            ? FbPersian::digit(static::getModel()::whereRelation('unread', 'id', Auth::id())->count())
+            ? Number::format(number: static::getModel()::whereRelation('unread', 'id', Auth::id())->count(), locale: App::getLocale())
             : null;
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return config('fb-message.navigation.badge_tooltip');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('fb-message.navigation.sort');
     }
 
     public static function form(Schema $schema): Schema
