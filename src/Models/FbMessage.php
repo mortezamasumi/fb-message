@@ -4,20 +4,20 @@ namespace Mortezamasumi\FbMessage\Models;
 
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 use Mortezamasumi\FbMessage\Enums\MessageFolder;
 use Mortezamasumi\FbMessage\Enums\MessageType;
 use Mortezamasumi\FbMessage\Models\Scopes\UserMessagesScope;
 use Mortezamasumi\FbMessage\Observers\MessageObserver;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 #[ObservedBy(MessageObserver::class)]
 #[ScopedBy(UserMessagesScope::class)]
@@ -62,7 +62,10 @@ class FbMessage extends Model implements HasMedia
             )
             ->withPivot(['folder', 'read_at', 'trashed_at', 'type'])
             ->withoutGlobalScope(SoftDeletingScope::class)
-            ->when(Auth::check(), fn (Builder $query) => $query->where('id', '<>', Auth::id()))
+            ->when(
+                Auth::check(),
+                fn (Builder $query) => $query->where('id', '<>', Auth::id())
+            )
             ->where(fn (Builder $query) => $query->messageTo());
     }
 
