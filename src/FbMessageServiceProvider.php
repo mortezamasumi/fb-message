@@ -34,8 +34,6 @@ class FbMessageServiceProvider extends PackageServiceProvider
             ->hasViews(static::$viewNamespace);
     }
 
-    public function packageRegistered(): void {}
-
     public function packageBooted(): void
     {
         Gate::policy(FbMessage::class, FbMessagePolicy::class);
