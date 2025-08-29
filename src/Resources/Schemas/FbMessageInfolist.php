@@ -2,10 +2,13 @@
 
 namespace Mortezamasumi\FbMessage\Resources\Schemas;
 
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
-use Mortezamasumi\FbMessage\Resources\Component\MessageAttachment;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Mortezamasumi\FbPersian\Facades\FbPersian;
 
 class FbMessageInfolist
@@ -39,8 +42,36 @@ class FbMessageInfolist
                     ->label(__('fb-message::fb-message.view.subject')),
                 TextEntry::make('body')
                     ->label(__('fb-message::fb-message.view.body')),
-                MessageAttachment::make('attachments')
-                    ->label(__('fb-message::fb-message.view.attachments')),
+                RepeatableEntry::make('attachments')
+                    ->label(__('fb-message::fb-message.form.attachments'))
+                    ->extraAttributes(['class' => 'flex justify-center'])
+                    ->schema([
+                        ImageEntry::make('file')
+                            ->hiddenLabel()
+                            ->disk(config('fb-message.attachment_disk'))
+                            ->square()
+                            ->imageSize(50)
+                            ->url(fn (?string $state): string => Storage::disk(config('fb-message.attachment_disk'))->url($state), true)
+                            ->visible(fn ($state) => Str::startsWith(Storage::disk(config('fb-message.attachment_disk'))->mimeType($state), 'image/')),
+                        TextEntry::make('file')
+                            ->hiddenLabel()
+                            ->url(fn (?string $state): string => Storage::disk(config('fb-message.attachment_disk'))->url($state), true)
+                            ->html()
+                            ->formatStateUsing(fn () => '<img src="/fb-message-assets/pdf.png" style="max-width: 50px; max-height: 50px;" />')
+                            ->visible(fn ($state) => Str::startsWith(Storage::disk(config('fb-message.attachment_disk'))->mimeType($state), 'application/pdf')),
+                        TextEntry::make('file')
+                            ->hiddenLabel()
+                            ->url(fn (?string $state): string => Storage::disk(config('fb-message.attachment_disk'))->url($state), true)
+                            ->html()
+                            ->formatStateUsing(fn () => '<img src="/fb-message-assets/audio.png" style="max-width: 50px; max-height: 50px;" />')
+                            ->visible(fn ($state) => Str::startsWith(Storage::disk(config('fb-message.attachment_disk'))->mimeType($state), 'audio/')),
+                        TextEntry::make('file')
+                            ->hiddenLabel()
+                            ->url(fn (?string $state): string => Storage::disk(config('fb-message.attachment_disk'))->url($state), true)
+                            ->html()
+                            ->formatStateUsing(fn () => '<img src="/fb-message-assets/video.png" style="max-width: 50px; max-height: 50px;" />')
+                            ->visible(fn ($state) => Str::startsWith(Storage::disk(config('fb-message.attachment_disk'))->mimeType($state), 'video/')),
+                    ])
             ])
             ->columns(1);
     }

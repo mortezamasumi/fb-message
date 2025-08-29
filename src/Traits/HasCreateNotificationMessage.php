@@ -10,8 +10,9 @@ trait HasCreateNotificationMessage
 {
     protected function getCreatedNotificationMessage(): ?string
     {
+        // dd($this->getRecord()->from);
         Notification::make()
-            ->title(__('fb-message::fb-message.notification.title', ['name' => $this->getRecord()->from->first()->name]))
+            ->title(__('fb-message::fb-message.notification.title', ['name' => $this->getRecord()->from->first()?->name]))
             ->actions([
                 Action::make('view')
                     ->label(__('fb-message::fb-message.notification.view'))

@@ -40,7 +40,7 @@ class FbMessagesTable
                     ->badge()
                     ->formatStateUsing(fn ($state) => $state->name)
                     ->hidden(fn (Page $livewire) => $livewire->activeTab === 'inbox'),
-                IconColumn::make('media.0')
+                IconColumn::make('attachments.0')
                     ->label(__('fb-message::fb-message.table.attachments'))
                     ->boolean()
                     ->trueIcon('heroicon-o-paper-clip')

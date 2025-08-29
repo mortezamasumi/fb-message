@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -24,44 +24,43 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class FbMessage extends Model implements HasMedia
 {
     use HasFactory;
-    use HasUuids;
+    // use HasUuids;
     use InteractsWithMedia;
 
     protected $fillable = [
         'id',
         'subject',
         'body',
+        'attachments',
     ];
+
+    public function casts(): array
+    {
+        return [
+            'attachments' => 'array',
+        ];
+    }
 
     public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('thumb')->width(100)->height(100);
     }
 
-    public function users(): BelongsToMany
+    public function users(): MorphToMany
     {
         return $this
-            ->belongsToMany(
+            ->morphToMany(
                 config('auth.providers.users.model'),
                 'fb_message_user',
-                'fb_message_id',
-                'user_id',
             )
             ->withPivot(['folder', 'read_at', 'trashed_at', 'type'])
             ->withoutGlobalScope(SoftDeletingScope::class);
     }
 
-    public function availableRecipients(): BelongsToMany
+    public function availableRecipients(): MorphToMany
     {
         return $this
-            ->belongsToMany(
-                config('auth.providers.users.model'),
-                'fb_message_user',
-                'fb_message_id',
-                'user_id',
-            )
-            ->withPivot(['folder', 'read_at', 'trashed_at', 'type'])
-            ->withoutGlobalScope(SoftDeletingScope::class)
+            ->users()
             ->when(
                 Auth::check(),
                 fn (Builder $query) => $query->where('id', '<>', Auth::id())
@@ -69,134 +68,71 @@ class FbMessage extends Model implements HasMedia
             ->where(fn (Builder $query) => $query->messageTo());
     }
 
-    public function inbox(): BelongsToMany
+    public function inbox(): MorphToMany
     {
         return $this
-            ->belongsToMany(
-                config('auth.providers.users.model'),
-                'fb_message_user',
-                'fb_message_id',
-                'user_id',
-            )
+            ->users()
             ->wherePivot('folder', MessageFolder::INBOX)
-            ->wherePivot('trashed_at', null)
-            ->withPivot(['folder', 'read_at', 'trashed_at', 'type'])
-            ->withoutGlobalScope(SoftDeletingScope::class);
+            ->wherePivot('trashed_at', null);
     }
 
-    public function unread(): BelongsToMany
+    public function unread(): MorphToMany
     {
         return $this
-            ->belongsToMany(
-                config('auth.providers.users.model'),
-                'fb_message_user',
-                'fb_message_id',
-                'user_id',
-            )
+            ->users()
             ->wherePivot('folder', MessageFolder::INBOX)
             ->wherePivot('trashed_at', null)
-            ->wherePivot('read_at', null)
-            ->withPivot(['folder', 'read_at', 'trashed_at', 'type'])
-            ->withoutGlobalScope(SoftDeletingScope::class);
+            ->wherePivot('read_at', null);
     }
 
-    public function sent(): BelongsToMany
+    public function sent(): MorphToMany
     {
         return $this
-            ->belongsToMany(
-                config('auth.providers.users.model'),
-                'fb_message_user',
-                'fb_message_id',
-                'user_id',
-            )
+            ->users()
             ->wherePivot('folder', MessageFolder::SENT)
-            ->wherePivot('trashed_at', null)
-            ->withPivot(['folder', 'read_at', 'trashed_at', 'type'])
-            ->withoutGlobalScope(SoftDeletingScope::class);
+            ->wherePivot('trashed_at', null);
     }
 
-    public function archived(): BelongsToMany
+    public function archived(): MorphToMany
     {
         return $this
-            ->belongsToMany(
-                config('auth.providers.users.model'),
-                'fb_message_user',
-                'fb_message_id',
-                'user_id',
-            )
+            ->users()
             ->wherePivot('folder', MessageFolder::ARCHIVED)
-            ->wherePivot('trashed_at', null)
-            ->withPivot(['folder', 'read_at', 'trashed_at', 'type'])
-            ->withoutGlobalScope(SoftDeletingScope::class);
+            ->wherePivot('trashed_at', null);
     }
 
-    public function trashed(): BelongsToMany
+    public function trashed(): MorphToMany
     {
         return $this
-            ->belongsToMany(
-                config('auth.providers.users.model'),
-                'fb_message_user',
-                'fb_message_id',
-                'user_id',
-            )
-            ->wherePivot('trashed_at', '<>', null)
-            ->withPivot(['folder', 'read_at', 'trashed_at', 'type'])
-            ->withoutGlobalScope(SoftDeletingScope::class);
+            ->users()
+            ->wherePivot('trashed_at', '<>', null);
     }
 
-    public function from(): BelongsToMany
+    public function from(): MorphToMany
     {
         return $this
-            ->belongsToMany(
-                config('auth.providers.users.model'),
-                'fb_message_user',
-                'fb_message_id',
-                'user_id',
-            )
-            ->wherePivot('type', MessageType::FROM)
-            ->withPivot(['folder', 'read_at', 'trashed_at', 'type'])
-            ->withoutGlobalScope(SoftDeletingScope::class);
+            ->users()
+            ->wherePivot('type', MessageType::FROM);
     }
 
-    public function to(): BelongsToMany
+    public function to(): MorphToMany
     {
         return $this
-            ->belongsToMany(
-                config('auth.providers.users.model'),
-                'fb_message_user',
-                'fb_message_id',
-                'user_id',
-            )
-            ->wherePivot('type', MessageType::TO)
-            ->withPivot(['folder', 'read_at', 'trashed_at', 'type'])
-            ->withoutGlobalScope(SoftDeletingScope::class);
+            ->users()
+            ->wherePivot('type', MessageType::TO);
     }
 
-    public function cc(): BelongsToMany
+    public function cc(): MorphToMany
     {
         return $this
-            ->belongsToMany(
-                config('auth.providers.users.model'),
-                'fb_message_user',
-                'fb_message_id',
-                'user_id',
-            )
-            ->wherePivot('type', MessageType::CC)
-            ->withPivot(['folder', 'read_at', 'trashed_at', 'type'])
-            ->withoutGlobalScope(SoftDeletingScope::class);
+            ->users()
+            ->wherePivot('type', MessageType::CC);
     }
 
-    public function bcc(): BelongsToMany
+    public function bcc(): MorphToMany
     {
         return $this
-            ->belongsToMany(
-                config('auth.providers.users.model'),
-                'fb_message_user',
-                'fb_message_id',
-                'user_id',
-            )
-            ->wherePivot('type', MessageType::BCC)
-            ->withPivot(['folder', 'read_at', 'trashed_at', 'type'])
-            ->withoutGlobalScope(SoftDeletingScope::class);
+            ->users()
+            ->wherePivot('type', MessageType::BCC);
     }
 }

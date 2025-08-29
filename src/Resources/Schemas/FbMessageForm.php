@@ -2,8 +2,8 @@
 
 namespace Mortezamasumi\FbMessage\Resources\Schemas;
 
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -27,32 +27,46 @@ class FbMessageForm
                     ->required()
                     ->getOptionLabelFromRecordUsing(fn (Model $record) => $record->name)
                     ->saveRelationshipsUsing(static function (Select $component, $state) {
-                        $relations = collect([Auth::id() => [
-                            'type' => MessageType::FROM,
-                            'folder' => MessageFolder::SENT,
-                        ]])->merge(collect($state)->mapWithKeys(fn ($s) => [$s => [
-                            'type' => MessageType::TO,
-                            'folder' => MessageFolder::INBOX,
-                        ]]));
+                        $component
+                            ->getRelationship()
+                            ->syncWithoutDetaching([
+                                Auth::id() => [
+                                    'type' => MessageType::FROM,
+                                    'folder' => MessageFolder::SENT,
+                                ]
+                            ]);
 
-                        $component->getRelationship()->syncWithoutDetaching($relations);
+                        $component
+                            ->getRelationship()
+                            ->syncWithoutDetaching(
+                                collect($state)
+                                    ->mapWithKeys(fn ($s) => [$s => [
+                                        'type' => MessageType::TO,
+                                        'folder' => MessageFolder::INBOX,
+                                    ]])
+                            );
                     }),
                 TextInput::make('subject')
                     ->label(__('fb-message::fb-message.form.subject'))
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->default('aaaaaaa'),
                 Textarea::make('body')
                     ->label(__('fb-message::fb-message.form.body'))
                     ->rows(4),
-                SpatieMediaLibraryFileUpload::make('attachments')
+                FileUpload::make('attachments')
                     ->label(__('fb-message::fb-message.form.attachments'))
-                    ->disk('public')
-                    ->visibility('public')
                     ->multiple()
-                    ->maxSize(config('fb-message.max-message-attachment-size'))
-                    ->maxFiles(3)
                     ->acceptedFileTypes(['application/pdf', 'image/*', 'audio/*', 'video/*'])
-                    ->columnSpanFull(),
+                    ->maxFiles(config('fb-message.max_attachments'))
+                    ->maxSize(config('fb-message.max_attachment_size'))
+                    ->disk(config('fb-message.attachment_disk'))
+                    ->directory(config('fb-message.attachment_folder'))
+                    ->visibility(config('fb-message.attachment_visibility'))
+                    ->columnSpanFull()
+                    ->dehydrateStateUsing(
+                        fn ($state) => array_map(fn ($file) => ['file' => $file], $state)
+                    )
             ])
             ->columns(1);
     }

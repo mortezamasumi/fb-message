@@ -6,6 +6,7 @@ use Filament\Support\Assets\Asset;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Response;
 use Livewire\Features\SupportTesting\Testable;
 use Mortezamasumi\FbMessage\Models\FbMessage;
 use Mortezamasumi\FbMessage\Policies\FbMessagePolicy;
@@ -13,11 +14,11 @@ use Mortezamasumi\FbMessage\Testing\TestsFbMessage;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Route;
 
 class FbMessageServiceProvider extends PackageServiceProvider
 {
     public static string $name = 'fb-message';
-    public static string $viewNamespace = 'fb-message';
 
     public function configurePackage(Package $package): void
     {
@@ -30,35 +31,23 @@ class FbMessageServiceProvider extends PackageServiceProvider
             })
             ->hasConfigFile()
             ->hasMigrations($this->getMigrations())
-            ->hasTranslations()
-            ->hasViews(static::$viewNamespace);
+            ->hasTranslations();
     }
 
     public function packageBooted(): void
     {
         Gate::policy(FbMessage::class, FbMessagePolicy::class);
 
-        FilamentAsset::register(
-            $this->getAssets(),
-            $this->getAssetPackageName()
-        );
+        Route::get('/fb-message-assets/{filename}', function ($filename) {
+            $path = __DIR__.'/../resources/images/'.$filename;
+            if (! file_exists($path)) {
+                abort(404);
+            }
+
+            return Response::file($path);
+        });
 
         Testable::mixin(new TestsFbMessage);
-    }
-
-    protected function getAssetPackageName(): ?string
-    {
-        return 'mortezamasumi/fb-message';
-    }
-
-    /**
-     * @return array<Asset>
-     */
-    protected function getAssets(): array
-    {
-        return [
-            Css::make('fb-message-styles', __DIR__.'/../resources/dist/css/index.css'),
-        ];
     }
 
     /**
