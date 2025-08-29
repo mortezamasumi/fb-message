@@ -16,16 +16,13 @@ use Mortezamasumi\FbMessage\Enums\MessageType;
 use Mortezamasumi\FbMessage\Models\Scopes\UserMessagesScope;
 use Mortezamasumi\FbMessage\Observers\MessageObserver;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
 
 #[ObservedBy(MessageObserver::class)]
 #[ScopedBy(UserMessagesScope::class)]
-class FbMessage extends Model implements HasMedia
+class FbMessage extends Model
 {
     use HasFactory;
     // use HasUuids;
-    use InteractsWithMedia;
 
     protected $fillable = [
         'id',
