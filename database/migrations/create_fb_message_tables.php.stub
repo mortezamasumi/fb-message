@@ -8,7 +8,8 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('fb_messages', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            // $table->uuid('id')->primary();
+            $table->id();
             $table->string('subject');
             $table->text('body')->nullable();
             $table->json('attachments')->nullable();

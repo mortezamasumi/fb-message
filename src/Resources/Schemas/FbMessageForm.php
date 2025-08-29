@@ -49,8 +49,7 @@ class FbMessageForm
                 TextInput::make('subject')
                     ->label(__('fb-message::fb-message.form.subject'))
                     ->required()
-                    ->maxLength(255)
-                    ->default('aaaaaaa'),
+                    ->maxLength(255),
                 Textarea::make('body')
                     ->label(__('fb-message::fb-message.form.body'))
                     ->rows(4),
