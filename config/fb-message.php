@@ -7,7 +7,7 @@ return [
         'group' => null,
         'parent_item' => null,
         'icon' => 'heroicon-o-envelope',
-        'active_icon' => null,
+        'active_icon' => 'heroicon-s-envelope',
         'badge' => false,
         'badge_tooltip' => null,
         'sort' => 9999,
