@@ -21,7 +21,7 @@
     ],
     "require": {
         "php": "^8.3",
-        "bezhansalleh/filament-shield": "^4.0@beta",
+        "bezhansalleh/filament-shield": "^4.0",
         "filament/filament": "^4.0",
         "spatie/laravel-package-tools": "^1.0"
     },
@@ -66,6 +66,6 @@
             }
         }
     },
-    "minimum-stability": "beta",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }
