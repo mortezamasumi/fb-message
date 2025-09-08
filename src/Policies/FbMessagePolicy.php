@@ -27,44 +27,9 @@ class FbMessagePolicy
         return $authUser->can('Create:FbMessage');
     }
 
-    public function update(AuthUser $authUser, FbMessage $fbMessage): bool
-    {
-        return $authUser->can('Update:FbMessage');
-    }
-
     public function delete(AuthUser $authUser, FbMessage $fbMessage): bool
     {
         return $authUser->can('Delete:FbMessage');
-    }
-
-    public function restore(AuthUser $authUser, FbMessage $fbMessage): bool
-    {
-        return $authUser->can('Restore:FbMessage');
-    }
-
-    public function forceDelete(AuthUser $authUser, FbMessage $fbMessage): bool
-    {
-        return $authUser->can('ForceDelete:FbMessage');
-    }
-
-    public function forceDeleteAny(AuthUser $authUser): bool
-    {
-        return $authUser->can('ForceDeleteAny:FbMessage');
-    }
-
-    public function restoreAny(AuthUser $authUser): bool
-    {
-        return $authUser->can('RestoreAny:FbMessage');
-    }
-
-    public function replicate(AuthUser $authUser, FbMessage $fbMessage): bool
-    {
-        return $authUser->can('Replicate:FbMessage');
-    }
-
-    public function reorder(AuthUser $authUser): bool
-    {
-        return $authUser->can('Reorder:FbMessage');
     }
 
     public function forwatd(AuthUser $authUser): bool

@@ -65,7 +65,7 @@ class ReplyMessage extends Page
 
         $this->callHook('beforeFill');
 
-        $this->form->fill($this->getRecord()->attributesToArray());
+        $this->form->fill($this->getRecord()->makeHidden(['attachments'])->attributesToArray());
 
         $this->callHook('afterFill');
 

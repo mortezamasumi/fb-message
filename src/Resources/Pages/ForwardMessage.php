@@ -18,7 +18,6 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Schema;
 use Filament\Support\Exceptions\Halt;
 use Filament\Support\Facades\FilamentView;
-use function Filament\Support\is_app_url;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -26,8 +25,9 @@ use Illuminate\Support\Str;
 use Mortezamasumi\FbMessage\Enums\MessageFolder;
 use Mortezamasumi\FbMessage\Enums\MessageType;
 use Mortezamasumi\FbMessage\Resources\FbMessageResource;
-
 use Mortezamasumi\FbMessage\Traits\HasCreateNotificationMessage;
+
+use function Filament\Support\is_app_url;
 
 /**
  * @property-read Schema $form
@@ -65,7 +65,7 @@ class ForwardMessage extends Page
 
         $this->callHook('beforeFill');
 
-        $this->form->fill($this->getRecord()->attributesToArray());
+        $this->form->fill($this->getRecord()->makeHidden(['attachments'])->attributesToArray());
 
         $this->callHook('afterFill');
 
@@ -116,8 +116,6 @@ class ForwardMessage extends Page
                             'folder' => MessageFolder::INBOX,
                         ]])
                 );
-
-            $this->original_record->getMedia()->each(fn ($item) => $item->copy($this->record));
 
             $this->callHook('afterSave');
         } catch (Halt $exception) {
