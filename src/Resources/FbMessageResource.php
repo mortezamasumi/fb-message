@@ -2,7 +2,6 @@
 
 namespace Mortezamasumi\FbMessage\Resources;
 
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -22,23 +21,9 @@ use Mortezamasumi\FbMessage\Resources\Tables\FbMessagesTable;
 use BackedEnum;
 use UnitEnum;
 
-class FbMessageResource extends Resource implements HasShieldPermissions
+class FbMessageResource extends Resource
 {
     protected static ?string $model = FbMessage::class;
-
-    public static function getPermissionPrefixes(): array
-    {
-        return [
-            'view',
-            'view_any',
-            'create',
-            'forward',
-            'reply',
-            'delete',
-            'archive',
-            'trash',
-        ];
-    }
 
     public static function getModelLabel(): string
     {

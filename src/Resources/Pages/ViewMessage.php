@@ -22,12 +22,12 @@ class ViewMessage extends ViewRecord
                 ->color('gray')
                 ->url($this->getResource()::getUrl('reply', ['record' => $this->getRecord()]))
                 ->hidden($this->record->from()->wherePivot('user_id', Auth::id())->exists())
-                ->visible(Auth::user()->can('reply_fb::message')),
+                ->visible(Auth::user()->can('Reply:FbMessage')),
             Actions\Action::make('forward')
                 ->label(__('fb-message::fb-message.actions.forward'))
                 ->color('gray')
                 ->url($this->getResource()::getUrl('forward', ['record' => $this->getRecord()]))
-                ->visible(Auth::user()->can('forward_fb::message')),
+                ->visible(Auth::user()->can('Forward:FbMessage')),
             Actions\Action::make('return')
                 ->label(__('fb-message::fb-message.actions.return'))
                 ->color('gray')

@@ -2,19 +2,17 @@
 
 namespace Mortezamasumi\FbMessage;
 
-use Filament\Support\Assets\Asset;
-use Filament\Support\Assets\Css;
-use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Route;
 use Livewire\Features\SupportTesting\Testable;
 use Mortezamasumi\FbMessage\Models\FbMessage;
 use Mortezamasumi\FbMessage\Policies\FbMessagePolicy;
+use Mortezamasumi\FbMessage\Resources\FbMessageResource;
 use Mortezamasumi\FbMessage\Testing\TestsFbMessage;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Route;
 
 class FbMessageServiceProvider extends PackageServiceProvider
 {
@@ -36,6 +34,17 @@ class FbMessageServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        config(['filament-shield.resources.manage' => [FbMessageResource::class => [
+            'view',
+            'view_any',
+            'create',
+            'forward',
+            'reply',
+            'delete',
+            'archive',
+            'trash',
+        ]]]);
+
         Gate::policy(FbMessage::class, FbMessagePolicy::class);
 
         Route::get('/fb-message-assets/{filename}', function ($filename) {

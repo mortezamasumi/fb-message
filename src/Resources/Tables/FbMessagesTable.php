@@ -60,7 +60,7 @@ class FbMessagesTable
                     ->icon('heroicon-o-archive-box-arrow-down')
                     ->color('primary')
                     ->tooltip(__('fb-message::fb-message.actions.archive'))
-                    ->visible(fn (Page $livewire) => ($livewire->activeTab === 'inbox' || $livewire->activeTab === 'sent') && Auth::user()->can('archive_fb::message'))
+                    ->visible(fn (Page $livewire) => ($livewire->activeTab === 'inbox' || $livewire->activeTab === 'sent') && Auth::user()->can('Archive:FbMessage'))
                     ->action(fn (Model $record) => FbMessage::archive($record)),
                 Action::make('unarchive-message')
                     ->hiddenLabel()
@@ -69,7 +69,7 @@ class FbMessagesTable
                     ->tooltip(__('fb-message::fb-message.actions.unarchive'))
                     ->visible(
                         fn (Page $livewire) => $livewire->activeTab === 'archived' &&
-                            Auth::user()->can('archive_fb::message')
+                            Auth::user()->can('Archive:FbMessage')
                     )
                     ->action(fn (Model $record) => FbMessage::unarchive($record)),
                 Action::make('trash-message')
@@ -78,21 +78,21 @@ class FbMessagesTable
                     ->color('danger')
                     ->tooltip(__('fb-message::fb-message.actions.trash'))
                     ->hidden(fn (Page $livewire) => $livewire->activeTab === 'trashed')
-                    ->visible(Auth::user()->can('trash_fb::message'))
+                    ->visible(Auth::user()->can('Trash:FbMessage'))
                     ->action(fn (Model $record) => FbMessage::trash($record)),
                 Action::make('restore-message')
                     ->hiddenLabel()
                     ->icon('heroicon-o-arrow-path-rounded-square')
                     ->color('success')
                     ->tooltip(__('fb-message::fb-message.actions.restore'))
-                    ->visible(fn (Page $livewire) => $livewire->activeTab === 'trashed' && Auth::user()->can('trash_fb::message'))
+                    ->visible(fn (Page $livewire) => $livewire->activeTab === 'trashed' && Auth::user()->can('Trash:FbMessage'))
                     ->action(fn (Model $record) => FbMessage::restore($record)),
                 Action::make('forget-message')
                     ->hiddenLabel()
                     ->icon('heroicon-o-archive-box-x-mark')
                     ->color('danger')
                     ->tooltip(__('fb-message::fb-message.actions.forget'))
-                    ->visible(fn (Page $livewire) => $livewire->activeTab === 'trashed' && Auth::user()->can('delete_fb::message'))
+                    ->visible(fn (Page $livewire) => $livewire->activeTab === 'trashed' && Auth::user()->can('Delete:FbMessage'))
                     ->requiresConfirmation()
                     ->modalHeading(
                         fn (Model $record): string => __('filament-actions::force-delete.single.modal.heading', ['label' => $record->subject])

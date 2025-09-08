@@ -1,139 +1,89 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mortezamasumi\FbMessage\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Foundation\Auth\User as AuthUser;
 use Mortezamasumi\FbMessage\Models\FbMessage;
 
 class FbMessagePolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny($user): bool
+    public function viewAny(AuthUser $authUser): bool
     {
-        return $user->can('view_any_fb::message');
+        return $authUser->can('ViewAny:FbMessage');
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view($user, FbMessage $fbMessage): bool
+    public function view(AuthUser $authUser, FbMessage $fbMessage): bool
     {
-        return $user->can('view_fb::message');
+        return $authUser->can('View:FbMessage');
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create($user): bool
+    public function create(AuthUser $authUser): bool
     {
-        return $user->can('create_fb::message');
+        return $authUser->can('Create:FbMessage');
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update($user, FbMessage $fbMessage): bool
+    public function update(AuthUser $authUser, FbMessage $fbMessage): bool
     {
-        return $user->can('{{ Update }}');
+        return $authUser->can('Update:FbMessage');
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete($user, FbMessage $fbMessage): bool
+    public function delete(AuthUser $authUser, FbMessage $fbMessage): bool
     {
-        return $user->can('delete_fb::message');
+        return $authUser->can('Delete:FbMessage');
     }
 
-    /**
-     * Determine whether the user can bulk delete.
-     */
-    public function deleteAny($user): bool
+    public function restore(AuthUser $authUser, FbMessage $fbMessage): bool
     {
-        return $user->can('{{ DeleteAny }}');
+        return $authUser->can('Restore:FbMessage');
     }
 
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete($user, FbMessage $fbMessage): bool
+    public function forceDelete(AuthUser $authUser, FbMessage $fbMessage): bool
     {
-        return $user->can('{{ ForceDelete }}');
+        return $authUser->can('ForceDelete:FbMessage');
     }
 
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny($user): bool
+    public function forceDeleteAny(AuthUser $authUser): bool
     {
-        return $user->can('{{ ForceDeleteAny }}');
+        return $authUser->can('ForceDeleteAny:FbMessage');
     }
 
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore($user, FbMessage $fbMessage): bool
+    public function restoreAny(AuthUser $authUser): bool
     {
-        return $user->can('{{ Restore }}');
+        return $authUser->can('RestoreAny:FbMessage');
     }
 
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny($user): bool
+    public function replicate(AuthUser $authUser, FbMessage $fbMessage): bool
     {
-        return $user->can('{{ RestoreAny }}');
+        return $authUser->can('Replicate:FbMessage');
     }
 
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate($user, FbMessage $fbMessage): bool
+    public function reorder(AuthUser $authUser): bool
     {
-        return $user->can('{{ Replicate }}');
+        return $authUser->can('Reorder:FbMessage');
     }
 
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder($user): bool
+    public function forwatd(AuthUser $authUser): bool
     {
-        return $user->can('{{ Reorder }}');
+        return $authUser->can('Forward:FbMessage');
     }
 
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function forward($user): bool
+    public function reply(AuthUser $authUser): bool
     {
-        return $user->can('{{ Forward }}');
+        return $authUser->can('Reply:FbMessage');
     }
 
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reply($user): bool
+    public function archive(AuthUser $authUser): bool
     {
-        return $user->can('{{ Reply }}');
+        return $authUser->can('Archive:FbMessage');
     }
 
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function archive($user): bool
+    public function trash(AuthUser $authUser): bool
     {
-        return $user->can('{{ Archive }}');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function trash($user): bool
-    {
-        return $user->can('{{ Trash }}');
+        return $authUser->can('Trash:FbMessage');
     }
 }
