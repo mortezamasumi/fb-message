@@ -35,7 +35,7 @@ class FbMessageServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         config(['filament-shield.resources.manage' => [
-            ...config('filament-shield.resources.manage'),
+            ...config('filament-shield.resources.manage') ?? [],
             FbMessageResource::class => [
                 'view',
                 'view_any',
