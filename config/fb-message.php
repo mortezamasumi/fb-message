@@ -15,6 +15,6 @@ return [
     'max_attachments' => env('MESSAGE_MAX_ATTACHMENTS', 5),
     'max_attachment_size' => env('MESSAGE_MAX_ATTACHMENT_SIZE', 8000),
     'attachment_disk' => env('MESSAGE_ATTACHMENT_DISK', 'public'),
-    'attachment_folder' => env('MESSAGE_ATTACHMENT_FOLDER', 'attachments'),
+    'attachment_folder' => env('MESSAGE_ATTACHMENT_FOLDER', '/uploads/attachments'),
     'attachment_visibility' => env('MESSAGE_ATTACHMENT_VISIBILITY', 'public'),
 ];
