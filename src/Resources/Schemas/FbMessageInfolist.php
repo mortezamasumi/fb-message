@@ -9,7 +9,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Mortezamasumi\FbPersian\Facades\FbPersian;
+use Mortezamasumi\FbEssentials\Facades\FbPersian;
 
 class FbMessageInfolist
 {

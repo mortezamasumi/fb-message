@@ -7,10 +7,10 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Mortezamasumi\FbEssentials\Facades\FbPersian;
 use Mortezamasumi\FbMessage\Enums\MessageFolder;
 use Mortezamasumi\FbMessage\Models\FbMessage;
 use Mortezamasumi\FbMessage\Resources\FbMessageResource;
-use Mortezamasumi\FbPersian\Facades\FbPersian;
 
 class ListMessages extends ListRecords
 {
