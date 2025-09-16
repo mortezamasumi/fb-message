@@ -57,19 +57,19 @@ class FbMessageInfolist
                             ->hiddenLabel()
                             ->url(fn (?string $state): string => Storage::disk(config('fb-message.attachment_disk'))->url($state), true)
                             ->html()
-                            ->formatStateUsing(fn () => '<img src="/fb-message-assets/pdf.png" style="max-width: 50px; max-height: 50px;" />')
+                            ->formatStateUsing(fn () => '<img src="/fb-essentials-assets/pdf.png" style="max-width: 50px; max-height: 50px;" />')
                             ->visible(fn ($state) => Str::contains(Storage::disk(config('fb-message.attachment_disk'))->mimeType($state), 'pdf')),
                         TextEntry::make('file')
                             ->hiddenLabel()
                             ->url(fn (?string $state): string => Storage::disk(config('fb-message.attachment_disk'))->url($state), true)
                             ->html()
-                            ->formatStateUsing(fn () => '<img src="/fb-message-assets/audio.png" style="max-width: 50px; max-height: 50px;" />')
+                            ->formatStateUsing(fn () => '<img src="/fb-essentials-assets/audio.png" style="max-width: 50px; max-height: 50px;" />')
                             ->visible(fn ($state) => Str::startsWith(Storage::disk(config('fb-message.attachment_disk'))->mimeType($state), 'audio/')),
                         TextEntry::make('file')
                             ->hiddenLabel()
                             ->url(fn (?string $state): string => Storage::disk(config('fb-message.attachment_disk'))->url($state), true)
                             ->html()
-                            ->formatStateUsing(fn () => '<img src="/fb-message-assets/video.png" style="max-width: 50px; max-height: 50px;" />')
+                            ->formatStateUsing(fn () => '<img src="/fb-essentials-assets/video.png" style="max-width: 50px; max-height: 50px;" />')
                             ->visible(fn ($state) => Str::startsWith(Storage::disk(config('fb-message.attachment_disk'))->mimeType($state), 'video/')),
                     ])
             ])

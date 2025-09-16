@@ -50,15 +50,6 @@ class FbMessageServiceProvider extends PackageServiceProvider
 
         Gate::policy(FbMessage::class, FbMessagePolicy::class);
 
-        Route::get('/fb-message-assets/{filename}', function ($filename) {
-            $path = __DIR__.'/../resources/images/'.$filename;
-            if (! file_exists($path)) {
-                abort(404);
-            }
-
-            return Response::file($path);
-        });
-
         Testable::mixin(new TestsFbMessage);
     }
 
