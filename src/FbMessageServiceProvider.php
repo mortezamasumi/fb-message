@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 use Livewire\Features\SupportTesting\Testable;
+use Mortezamasumi\FbEssentials\Facades\FbEssentials;
 use Mortezamasumi\FbMessage\Models\FbMessage;
 use Mortezamasumi\FbMessage\Policies\FbMessagePolicy;
 use Mortezamasumi\FbMessage\Resources\FbMessageResource;
@@ -34,9 +35,9 @@ class FbMessageServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        config(['filament-shield.resources.manage' => [
-            ...config('filament-shield.resources.manage') ?? [],
-            FbMessageResource::class => [
+        FbEssentials::filamentShieldAddResource(
+            FbMessageResource::class,
+            [
                 'view',
                 'view_any',
                 'create',
@@ -45,8 +46,9 @@ class FbMessageServiceProvider extends PackageServiceProvider
                 'delete',
                 'archive',
                 'trash',
-            ]
-        ]]);
+            ],
+            true
+        );
 
         Gate::policy(FbMessage::class, FbMessagePolicy::class);
 
