@@ -2,77 +2,82 @@
 
 namespace Mortezamasumi\FbMessage\Tests;
 
-use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
-use BladeUI\Icons\BladeIconsServiceProvider;
-use Filament\Actions\ActionsServiceProvider;
-use Filament\Forms\FormsServiceProvider;
-use Filament\Infolists\InfolistsServiceProvider;
-use Filament\Notifications\NotificationsServiceProvider;
-use Filament\Support\SupportServiceProvider;
-use Filament\Tables\TablesServiceProvider;
-use Filament\Widgets\WidgetsServiceProvider;
-use Filament\FilamentServiceProvider;
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Livewire\LivewireServiceProvider;
-use Mortezamasumi\FbMessage\Tests\Services\FbMessagePanelProvider;
+use Filament\Facades\Filament;
+use Filament\Pages\Dashboard;
+use Filament\Panel;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
+use Mortezamasumi\FbEssentials\FbEssentialsPlugin;
+use Mortezamasumi\FbEssentials\FbEssentialsServiceProvider;
+use Mortezamasumi\FbMessage\FbMessagePlugin;
 use Mortezamasumi\FbMessage\FbMessageServiceProvider;
-use Orchestra\Testbench\TestCase as Orchestra;
-use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
+use Orchestra\Testbench\TestCase as TestbenchTestCase;
 
-use function Orchestra\Testbench\default_migration_path;
-
-class TestCase extends Orchestra
+class TestCase extends TestbenchTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        // Factory::guessFactoryNamesUsing(
-        //     fn (string $modelName) => 'Mortezamasumi\\FbMessage\\Database\\Factories\\'.class_basename($modelName).'Factory'
-        // );
-    }
+    use RefreshDatabase;
 
     protected function defineEnvironment($app)
     {
-        // config()->set('app.key', 'base64:Hupx3yAySikrM2/edkZQNQHslgDWYfiBfCuSThJ5SK8=');
-        // config()->set('database.default', 'testing');
-        // config()->set('queue.batching.database', 'testing');
-        // config()->set('auth.providers.users.model', '\Tests\Models\User');
+        Schema::create('users', function (Blueprint $table) {
+            // $table->uuid('id')->primary();
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('password');
+            $table->timestamps();
+        });
 
-        /*
-         * $migration = include __DIR__.'/../database/migrations/create_page-test_table.php.stub';
-         * $migration->up();
-         */
-        // View::addLocation(__DIR__.'/resources/views');
-        // View::addLocation(__DIR__.'/../resources/views');
+        Schema::create('notifications', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('type');
+            $table->uuidMorphs('notifiable');
+            $table->text('data');
+            $table->timestamp('read_at')->nullable();
+            $table->timestamps();
+        });
+
+        Filament::registerPanel(
+            Panel::make()
+                ->id('admin')
+                ->path('/')
+                ->login()
+                ->default()
+                ->pages([
+                    Dashboard::class,
+                ])
+                ->plugins([
+                    FbEssentialsPlugin::make(),
+                    FbMessagePlugin::make(),
+                ])
+        );
     }
 
     protected function defineDatabaseMigrations()
     {
-        /** @var Orchestra $this */
-        $this->loadMigrationsFrom(default_migration_path());
-        $this->loadMigrationsFrom(default_migration_path().'/notifications');
-        // $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
+        $this->artisan('vendor:publish', ['--tag' => 'fb-message-migrations']);
     }
 
     protected function getPackageProviders($app)
     {
         return [
-            ActionsServiceProvider::class,
-            BladeCaptureDirectiveServiceProvider::class,
-            BladeHeroiconsServiceProvider::class,
-            BladeIconsServiceProvider::class,
-            FilamentServiceProvider::class,
-            FormsServiceProvider::class,
-            InfolistsServiceProvider::class,
-            LivewireServiceProvider::class,
-            NotificationsServiceProvider::class,
-            SupportServiceProvider::class,
-            TablesServiceProvider::class,
-            WidgetsServiceProvider::class,
+            \BladeUI\Heroicons\BladeHeroiconsServiceProvider::class,
+            \BladeUI\Icons\BladeIconsServiceProvider::class,
+            \Filament\FilamentServiceProvider::class,
+            \Filament\Actions\ActionsServiceProvider::class,
+            \Filament\Forms\FormsServiceProvider::class,
+            \Filament\Infolists\InfolistsServiceProvider::class,
+            \Filament\Notifications\NotificationsServiceProvider::class,
+            \Filament\Schemas\SchemasServiceProvider::class,
+            \Filament\Support\SupportServiceProvider::class,
+            \Filament\Tables\TablesServiceProvider::class,
+            \Filament\Widgets\WidgetsServiceProvider::class,
+            \Livewire\LivewireServiceProvider::class,
+            \RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider::class,
+            \Orchestra\Workbench\WorkbenchServiceProvider::class,
+            FbEssentialsServiceProvider::class,
             FbMessageServiceProvider::class,
-            // FbMessagePanelProvider::class,
         ];
     }
 }

@@ -3,8 +3,6 @@
 namespace Mortezamasumi\FbMessage;
 
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Route;
 use Livewire\Features\SupportTesting\Testable;
 use Mortezamasumi\FbEssentials\Facades\FbEssentials;
 use Mortezamasumi\FbMessage\Models\FbMessage;
