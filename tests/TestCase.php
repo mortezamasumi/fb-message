@@ -21,7 +21,6 @@ class TestCase extends TestbenchTestCase
     protected function defineEnvironment($app)
     {
         Schema::create('users', function (Blueprint $table) {
-            // $table->uuid('id')->primary();
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
