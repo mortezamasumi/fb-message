@@ -9,7 +9,6 @@ use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Mortezamasumi\FbEssentials\Facades\FbPersian;
 
 class FbMessageInfolist
 {
@@ -32,7 +31,7 @@ class FbMessageInfolist
                 // ->getStateUsing(fn (Model $record) => $record->cc->pluck('full_name')),
                 TextEntry::make('created_at')
                     ->label(__('fb-message::fb-message.view.date'))
-                    ->formatStateUsing(fn ($state) => FbPersian::jDateTime(null, $state))
+                    ->formatStateUsing(fn ($state) => __jdatetime(null, $state))
                     ->jDateTime(),
                 //    ->weight(FontWeight::Black)
                 //    ->localeDigit()

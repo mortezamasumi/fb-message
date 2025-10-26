@@ -9,7 +9,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Mortezamasumi\FbEssentials\Facades\FbPersian;
 use Mortezamasumi\FbMessage\Facades\FbMessage;
 
 class FbMessagesTable
@@ -42,7 +41,7 @@ class FbMessagesTable
                 TextColumn::make('created_at')
                     ->label(__('fb-message::fb-message.table.date'))
                     ->sortable()
-                    ->formatStateUsing(fn ($state) => FbPersian::jDateTime(null, $state))
+                    ->formatStateUsing(fn ($state) => __jdatetime(null, $state))
                     ->jDateTime(),
             ])
             ->filters([

@@ -4,11 +4,10 @@ use Filament\Notifications\Notification as FilamentNotification;
 use Filament\Pages\Dashboard;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Mortezamasumi\FbEssentials\Facades\FbPersian;
 use Mortezamasumi\FbMessage\Enums\MessageFolder;
+use Mortezamasumi\FbMessage\Resources\FbMessageResource;
 use Mortezamasumi\FbMessage\Resources\Pages\CreateMessage;
 use Mortezamasumi\FbMessage\Resources\Pages\ListMessages;
-use Mortezamasumi\FbMessage\Resources\FbMessageResource;
 use Mortezamasumi\FbMessage\Tests\Services\FbMessage;
 use Mortezamasumi\FbMessage\Tests\Services\User;
 
@@ -82,7 +81,7 @@ it('can show only unread count messages', function () {
         ->getTabs();
 
     expect($tabs['inbox']->getBadge())
-        ->toBe(FbPersian::digit($numberOfMessages));
+        ->toBe(__digit($numberOfMessages));
 
     Db::table('fb_message_users')
         ->limit($numberOfReadMessages)
@@ -96,7 +95,7 @@ it('can show only unread count messages', function () {
         ->getTabs();
 
     expect($tabs['inbox']->getBadge())
-        ->toBe(FbPersian::digit($numberOfMessages - $numberOfReadMessages));
+        ->toBe(__digit($numberOfMessages - $numberOfReadMessages));
 });
 
 it('can show sent messages', function () {

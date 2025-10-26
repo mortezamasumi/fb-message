@@ -7,7 +7,6 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
-use Mortezamasumi\FbEssentials\Facades\FbPersian;
 use Mortezamasumi\FbMessage\Enums\MessageFolder;
 use Mortezamasumi\FbMessage\Models\FbMessage;
 use Mortezamasumi\FbMessage\Resources\FbMessageResource;
@@ -33,7 +32,7 @@ class ListMessages extends ListRecords
                     ->icon($folder->getIcon());
 
                 if ($folder === MessageFolder::INBOX) {
-                    $tab->badge(FbPersian::digit(FbMessage::whereRelation('unread', 'id', Auth::id())->count()));
+                    $tab->badge(__digit(FbMessage::whereRelation('unread', 'id', Auth::id())->count()));
                 }
 
                 return [$folder->value => $tab];
