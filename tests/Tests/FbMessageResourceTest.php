@@ -5,21 +5,23 @@ use Filament\Pages\Dashboard;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Mortezamasumi\FbMessage\Enums\MessageFolder;
-use Mortezamasumi\FbMessage\Resources\FbMessageResource;
 use Mortezamasumi\FbMessage\Resources\Pages\CreateMessage;
 use Mortezamasumi\FbMessage\Resources\Pages\ListMessages;
+use Mortezamasumi\FbMessage\Resources\FbMessageResource;
 use Mortezamasumi\FbMessage\Tests\Services\FbMessage;
 use Mortezamasumi\FbMessage\Tests\Services\User;
 
 beforeEach(function () {
+    /** @var Pest $this */
     $this->actingAs($this->user = User::factory()->create());
 
-    Gate::before(fn () => true);
+    Gate::before(fn() => true);
 
     $this->otherUser = User::factory()->create();
 });
 
 it('can see message navigation', function () {
+    /** @var Pest $this */
     $this
         ->get(Dashboard::getUrl())
         ->assertSuccessful()
@@ -27,6 +29,7 @@ it('can see message navigation', function () {
 });
 
 it('can render message index page', function () {
+    /** @var Pest $this */
     $this
         ->get(FbMessageResource::getUrl('index'))
         ->assertSuccessful()
@@ -37,6 +40,7 @@ it('can render message index page', function () {
 });
 
 it('can show messages in inbox and not in sent', function () {
+    /** @var Pest $this */
     $count = 5;
     $messages = FbMessage::factory()
         ->count($count)
@@ -67,6 +71,7 @@ it('can show only unread count messages', function () {
     $numberOfMessages = 1;
     $numberOfReadMessages = 1;
 
+    /** @var Pest $this */
     FbMessage::factory()
         ->count($numberOfMessages)
         ->to($this->user)
@@ -99,6 +104,7 @@ it('can show only unread count messages', function () {
 });
 
 it('can show sent messages', function () {
+    /** @var Pest $this */
     $count = 5;
     $messages = FbMessage::factory()
         ->count($count)
@@ -122,6 +128,7 @@ it('can show sent messages', function () {
 });
 
 it('can not show messages belongs to other users', function () {
+    /** @var Pest $this */
     FbMessage::factory()->from($this->otherUser)->to(User::factory()->create())->create();
 
     $this
@@ -140,6 +147,7 @@ it('can not show messages belongs to other users', function () {
 });
 
 it('can render view page', function () {
+    /** @var Pest $this */
     $message = FbMessage::factory()->to($this->user)->create();
 
     $this
@@ -152,12 +160,14 @@ it('can render view page', function () {
 });
 
 it('can render create page', function () {
+    /** @var Pest $this */
     $this
         ->get(FbMessageResource::getUrl('create'))
         ->assertSuccessful();
 });
 
 it('can create message and show in sent and inbox', function () {
+    /** @var Pest $this */
     $formData = [
         'to' => [$this->otherUser->id],
         ...FbMessage::factory()->make()->toArray()
@@ -191,6 +201,7 @@ it('can create message and show in sent and inbox', function () {
 return;
 
 it('can archive/unarchice message', function () {
+    /** @var Pest $this */
     $message = FbMessage::factory()->to($this->user)->create();
 
     $this
@@ -216,6 +227,7 @@ it('can archive/unarchice message', function () {
 });
 
 it('can trash/restore message', function () {
+    /** @var Pest $this */
     $message = FbMessage::factory()->to($this->user)->create();
 
     $this
@@ -241,6 +253,7 @@ it('can trash/restore message', function () {
 });
 
 it('can delete trashed message forever', function () {
+    /** @var Pest $this */
     $message = FbMessage::factory()->to($this->user)->create();
 
     $this
