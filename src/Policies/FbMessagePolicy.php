@@ -32,7 +32,7 @@ class FbMessagePolicy
         return $authUser->can('Delete:FbMessage');
     }
 
-    public function forwatd(AuthUser $authUser): bool
+    public function forward(AuthUser $authUser): bool
     {
         return $authUser->can('Forward:FbMessage');
     }

@@ -2,28 +2,28 @@
 
 namespace Mortezamasumi\FbMessage;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Mortezamasumi\FbMessage\Enums\MessageFolder;
 use Mortezamasumi\FbMessage\Enums\MessageType;
+use Mortezamasumi\FbMessage\Models\FbMessage as FbMessageModel;
 
 class FbMessage
 {
-    public function markAsRead(Model $record): void
+    public function markAsRead(FbMessageModel $record): void
     {
         $record
             ->users()
             ->updateExistingPivot(Auth::id(), ['read_at' => now()]);
     }
 
-    public function archive(Model $record): void
+    public function archive(FbMessageModel $record): void
     {
         $record
             ->users()
             ->updateExistingPivot(Auth::id(), ['folder' => MessageFolder::ARCHIVED]);
     }
 
-    public function unarchive(Model $record): void
+    public function unarchive(FbMessageModel $record): void
     {
         $record
             ->users()
@@ -36,21 +36,21 @@ class FbMessage
             ->updateExistingPivot(Auth::id(), ['folder' => MessageFolder::INBOX]);
     }
 
-    public function trash(Model $record): void
+    public function trash(FbMessageModel $record): void
     {
         $record
             ->users()
             ->updateExistingPivot(Auth::id(), ['trashed_at' => now()]);
     }
 
-    public function restore(Model $record): void
+    public function restore(FbMessageModel $record): void
     {
         $record
             ->users()
             ->updateExistingPivot(Auth::id(), ['trashed_at' => null]);
     }
 
-    public function forget(Model $record): void
+    public function forget(FbMessageModel $record): void
     {
         $record->users()->detach(Auth::id());
 

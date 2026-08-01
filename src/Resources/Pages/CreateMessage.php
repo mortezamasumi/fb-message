@@ -12,6 +12,7 @@ class CreateMessage extends CreateRecord
     use HasCreateNotificationMessage;
 
     protected static string $resource = FbMessageResource::class;
+
     protected static bool $canCreateAnother = false;
 
     protected function getRedirectUrl(): string

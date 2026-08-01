@@ -8,6 +8,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
 use Mortezamasumi\FbMessage\Enums\MessageFolder;
 use Mortezamasumi\FbMessage\Enums\MessageType;
@@ -25,26 +26,33 @@ class FbMessageForm
                     ->preload()
                     ->disabledOn('reply')
                     ->required()
-                    ->getOptionLabelFromRecordUsing(fn (Model $record) => $record->name)
+                    ->getOptionLabelFromRecordUsing(fn (Model $record) => $record->getAttribute('name'))
                     ->saveRelationshipsUsing(static function (Select $component, $state) {
-                        $component
-                            ->getRelationship()
-                            ->syncWithoutDetaching([
-                                Auth::id() => [
-                                    'type' => MessageType::FROM,
-                                    'folder' => MessageFolder::SENT,
-                                ]
-                            ]);
+                        $relationship = $component->getRelationship();
 
-                        $component
-                            ->getRelationship()
-                            ->syncWithoutDetaching(
-                                collect($state)
-                                    ->mapWithKeys(fn ($s) => [$s => [
-                                        'type' => MessageType::TO,
-                                        'folder' => MessageFolder::INBOX,
-                                    ]])
-                            );
+                        if (! $relationship instanceof BelongsToMany) {
+                            return;
+                        }
+
+                        $sender = Auth::id() ?? throw new \RuntimeException('No authenticated user.');
+
+                        /** @var list<int|string> $recipients */
+                        $recipients = $state;
+
+                        $relationship->syncWithoutDetaching([
+                            $sender => [
+                                'type' => MessageType::FROM,
+                                'folder' => MessageFolder::SENT,
+                            ],
+                        ]);
+
+                        $relationship->syncWithoutDetaching(
+                            collect($recipients)
+                                ->mapWithKeys(fn ($recipient) => [$recipient => [
+                                    'type' => MessageType::TO,
+                                    'folder' => MessageFolder::INBOX,
+                                ]])
+                        );
                     }),
                 TextInput::make('subject')
                     ->label(__('fb-message::fb-message.form.subject'))
@@ -64,8 +72,15 @@ class FbMessageForm
                     ->visibility(config('fb-message.attachment_visibility'))
                     ->columnSpanFull()
                     ->dehydrateStateUsing(
-                        fn ($state) => array_map(fn ($file) => ['file' => $file], $state)
-                    )
+                        static function ($state) {
+                            /** @var list<string> $files */
+                            $files = $state;
+
+                            return collect($files)
+                                ->map(fn ($file) => ['file' => $file])
+                                ->all();
+                        }
+                    ),
             ])
             ->columns(1);
     }

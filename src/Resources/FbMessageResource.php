@@ -2,6 +2,7 @@
 
 namespace Mortezamasumi\FbMessage\Resources;
 
+use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -18,7 +19,6 @@ use Mortezamasumi\FbMessage\Resources\Pages\ViewMessage;
 use Mortezamasumi\FbMessage\Resources\Schemas\FbMessageForm;
 use Mortezamasumi\FbMessage\Resources\Schemas\FbMessageInfolist;
 use Mortezamasumi\FbMessage\Resources\Tables\FbMessagesTable;
-use BackedEnum;
 use UnitEnum;
 
 class FbMessageResource extends Resource
@@ -58,7 +58,7 @@ class FbMessageResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return config('fb-message.navigation.badge')
-            ? Number::format(number: static::getModel()::whereRelation('unread', 'id', Auth::id())->count(), locale: App::getLocale())
+            ? Number::format(number: static::getModel()::whereRelation('unread', 'id', Auth::id())->count(), locale: App::getLocale()) ?: null
             : null;
     }
 

@@ -62,5 +62,5 @@ return [
         'title' => 'Forward message',
         'breadcrumb' => 'Forward message',
         'subject_forward' => 'Forward',
-    ]
+    ],
 ];

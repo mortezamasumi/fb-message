@@ -3,7 +3,6 @@
 namespace Mortezamasumi\FbMessage\Resources\Pages;
 
 use Filament\Actions\Action;
-use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Pages\Concerns\HasUnsavedDataChangesAlert;
 use Filament\Pages\Concerns\InteractsWithFormActions;
@@ -19,11 +18,11 @@ use Filament\Schemas\Schema;
 use Filament\Support\Exceptions\Halt;
 use Filament\Support\Facades\FilamentView;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Mortezamasumi\FbMessage\Enums\MessageFolder;
 use Mortezamasumi\FbMessage\Enums\MessageType;
+use Mortezamasumi\FbMessage\Models\FbMessage;
 use Mortezamasumi\FbMessage\Resources\FbMessageResource;
 use Mortezamasumi\FbMessage\Traits\HasCreateNotificationMessage;
 
@@ -34,15 +33,19 @@ use function Filament\Support\is_app_url;
  */
 class ForwardMessage extends Page
 {
+    use HasCreateNotificationMessage;
     use HasRelationManagers;
     use HasUnsavedDataChangesAlert;
     use InteractsWithFormActions;
-    use HasCreateNotificationMessage;
     use InteractsWithRecord;
 
     protected static string $resource = FbMessageResource::class;
+
+    /** @var array<string, mixed> */
     public ?array $data = [];
-    public $original_record;
+
+    public FbMessage $original_record;
+
     public ?string $previousUrl = null;
 
     public function getTitle(): string|Htmlable
@@ -57,7 +60,10 @@ class ForwardMessage extends Page
 
     public function mount(int|string $record): void
     {
-        $this->original_record = $this->resolveRecord($record);
+        /** @var FbMessage $originalRecord */
+        $originalRecord = $this->resolveRecord($record);
+
+        $this->original_record = $originalRecord;
 
         $this->record = $this->original_record->replicate();
 
@@ -92,25 +98,30 @@ class ForwardMessage extends Page
 
             $this->callHook('beforeSave');
 
-            $this->record = $this->handleRecordCreation($data);
+            $record = $this->handleRecordCreation($data);
 
-            $this
-                ->record
+            $this->record = $record;
+
+            $sender = Auth::id() ?? throw new \RuntimeException('No authenticated user.');
+
+            $record
                 ->from()
                 ->attach(
                     [
-                        Auth::id() => [
+                        $sender => [
                             'type' => MessageType::FROM,
                             'folder' => MessageFolder::SENT,
                         ],
                     ]
                 );
 
-            $this
-                ->record
+            /** @var list<int|string> $recipients */
+            $recipients = $this->data['to'] ?? [];
+
+            $record
                 ->to()
                 ->attach(
-                    collect(data_get($this->form->validate(), 'data.to'))
+                    collect($recipients)
                         ->mapWithKeys(fn ($item) => [$item => [
                             'type' => MessageType::TO,
                             'folder' => MessageFolder::INBOX,
@@ -134,22 +145,22 @@ class ForwardMessage extends Page
         }
     }
 
-    protected function handleRecordCreation(array $data): Model
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    protected function handleRecordCreation(array $data): FbMessage
     {
+        /** @var FbMessage $record */
         $record = new ($this->getModel())($data);
-
-        if (
-            static::getResource()::isScopedToTenant() &&
-            ($tenant = Filament::getTenant())
-        ) {
-            return $this->associateRecordWithTenant($record, $tenant);
-        }
 
         $record->save();
 
         return $record;
     }
 
+    /**
+     * @return array{0: Action, 1: Action}
+     */
     protected function getFormActions(): array
     {
         return [
@@ -244,27 +255,4 @@ class ForwardMessage extends Page
     {
         return 'save';
     }
-
-    // protected function getCreatedNotificationMessage(): ?string
-    // {
-    //     Notifications\Notification::make()
-    //         ->title(__('fb-message::fb-message.notification.title', ['name' => $this->getRecord()->from->first()->getFilamentName()]))
-    //         ->actions([
-    //             Notifications\Actions\Action::make('view')
-    //                 ->label(__('fb-message::fb-message.notification.view'))
-    //                 ->button()
-    //                 ->url($this->getResource()::getUrl('view', ['record' => $this->getRecord()->id]))
-    //                 ->markAsRead()
-    //                 ->close(),
-    //         ])
-    //         ->sendToDatabase($this->getRecord()->to->union($this->getRecord()->cc, $this->getRecord()->bcc));
-
-    //     DB::table('notifications')
-    //         ->where('notifiable_type', config('auth.providers.users.model'))
-    //         ->update([
-    //             'notifiable_type' => config('auth.providers.users.model')
-    //         ]);
-
-    //     return __('fb-message::fb-message.notification.sent');
-    // }
 }

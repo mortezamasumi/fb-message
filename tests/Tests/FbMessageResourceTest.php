@@ -5,31 +5,28 @@ use Filament\Pages\Dashboard;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Mortezamasumi\FbMessage\Enums\MessageFolder;
+use Mortezamasumi\FbMessage\Resources\FbMessageResource;
 use Mortezamasumi\FbMessage\Resources\Pages\CreateMessage;
 use Mortezamasumi\FbMessage\Resources\Pages\ListMessages;
-use Mortezamasumi\FbMessage\Resources\FbMessageResource;
 use Mortezamasumi\FbMessage\Tests\Services\FbMessage;
 use Mortezamasumi\FbMessage\Tests\Services\User;
 
 beforeEach(function () {
-    /** @var Pest $this */
     $this->actingAs($this->user = User::factory()->create());
 
-    Gate::before(fn() => true);
+    Gate::before(fn () => true);
 
     $this->otherUser = User::factory()->create();
 });
 
-it('can see message navigation', function () {
-    /** @var Pest $this */
+it('shows the messages navigation item', function () {
     $this
         ->get(Dashboard::getUrl())
         ->assertSuccessful()
         ->assertSeeText('Messages');
 });
 
-it('can render message index page', function () {
-    /** @var Pest $this */
+it('renders the message index page with all folder tabs', function () {
     $this
         ->get(FbMessageResource::getUrl('index'))
         ->assertSuccessful()
@@ -39,8 +36,7 @@ it('can render message index page', function () {
         ->assertSee(MessageFolder::TRASHED->getLabel());
 });
 
-it('can show messages in inbox and not in sent', function () {
-    /** @var Pest $this */
+it('shows received messages only in the inbox tab', function () {
     $count = 5;
     $messages = FbMessage::factory()
         ->count($count)
@@ -55,7 +51,6 @@ it('can show messages in inbox and not in sent', function () {
         ->assertCanSeeTableRecords($messages)
         ->assertCountTableRecords($count);
 
-    return;
     $this
         ->livewire(ListMessages::class, [
             'activeTab' => MessageFolder::SENT->value,
@@ -64,16 +59,9 @@ it('can show messages in inbox and not in sent', function () {
         ->assertCountTableRecords(0);
 });
 
-it('can show only unread count messages', function () {
-    $numberOfMessages = rand(15, 50);
-    $numberOfReadMessages = rand(1, $numberOfMessages);
-
-    $numberOfMessages = 1;
-    $numberOfReadMessages = 1;
-
-    /** @var Pest $this */
-    FbMessage::factory()
-        ->count($numberOfMessages)
+it('shows the unread count as the inbox tab badge', function () {
+    $messages = FbMessage::factory()
+        ->count(3)
         ->to($this->user)
         ->from($this->otherUser)
         ->create();
@@ -85,11 +73,10 @@ it('can show only unread count messages', function () {
         ->instance()
         ->getTabs();
 
-    expect($tabs['inbox']->getBadge())
-        ->toBe(__digit($numberOfMessages));
+    expect($tabs['inbox']->getBadge())->toBe(__digit(3));
 
-    Db::table('fb_message_users')
-        ->limit($numberOfReadMessages)
+    DB::table('fb_message_users')
+        ->where('fb_message_user_id', $messages->first()->getKey())
         ->update(['read_at' => now()]);
 
     $tabs = $this
@@ -99,12 +86,10 @@ it('can show only unread count messages', function () {
         ->instance()
         ->getTabs();
 
-    expect($tabs['inbox']->getBadge())
-        ->toBe(__digit($numberOfMessages - $numberOfReadMessages));
+    expect($tabs['inbox']->getBadge())->toBe(__digit(2));
 });
 
-it('can show sent messages', function () {
-    /** @var Pest $this */
+it('shows sent messages only in the sent tab', function () {
     $count = 5;
     $messages = FbMessage::factory()
         ->count($count)
@@ -127,8 +112,7 @@ it('can show sent messages', function () {
         ->assertCountTableRecords(0);
 });
 
-it('can not show messages belongs to other users', function () {
-    /** @var Pest $this */
+it('hides messages that belong to other users', function () {
     FbMessage::factory()->from($this->otherUser)->to(User::factory()->create())->create();
 
     $this
@@ -146,8 +130,7 @@ it('can not show messages belongs to other users', function () {
         ->assertCountTableRecords(0);
 });
 
-it('can render view page', function () {
-    /** @var Pest $this */
+it('renders the view page for a received message', function () {
     $message = FbMessage::factory()->to($this->user)->create();
 
     $this
@@ -159,18 +142,26 @@ it('can render view page', function () {
         ->assertSeeText($message->body);
 });
 
-it('can render create page', function () {
-    /** @var Pest $this */
+it('returns a 404 when viewing a message the user does not belong to', function () {
+    $message = FbMessage::factory()->from($this->otherUser)->to(User::factory()->create())->create();
+
+    $this
+        ->get(FbMessageResource::getUrl('view', [
+            'record' => $message,
+        ]))
+        ->assertNotFound();
+});
+
+it('renders the create page', function () {
     $this
         ->get(FbMessageResource::getUrl('create'))
         ->assertSuccessful();
 });
 
-it('can create message and show in sent and inbox', function () {
-    /** @var Pest $this */
+it('creates a message and shows it in the sent and inbox folders', function () {
     $formData = [
         'to' => [$this->otherUser->id],
-        ...FbMessage::factory()->make()->toArray()
+        ...FbMessage::factory()->make()->toArray(),
     ];
 
     $this
@@ -198,10 +189,7 @@ it('can create message and show in sent and inbox', function () {
         ->assertCanSeeTableRecords($messages);
 });
 
-return;
-
-it('can archive/unarchice message', function () {
-    /** @var Pest $this */
+it('archives and unarchives a message', function () {
     $message = FbMessage::factory()->to($this->user)->create();
 
     $this
@@ -226,8 +214,7 @@ it('can archive/unarchice message', function () {
         ->assertCountTableRecords(1);
 });
 
-it('can trash/restore message', function () {
-    /** @var Pest $this */
+it('trashes and restores a message', function () {
     $message = FbMessage::factory()->to($this->user)->create();
 
     $this
@@ -252,8 +239,7 @@ it('can trash/restore message', function () {
         ->assertCountTableRecords(1);
 });
 
-it('can delete trashed message forever', function () {
-    /** @var Pest $this */
+it('deletes a trashed message forever', function () {
     $message = FbMessage::factory()->to($this->user)->create();
 
     $this

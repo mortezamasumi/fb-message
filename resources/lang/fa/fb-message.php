@@ -62,5 +62,5 @@ return [
         'title' => 'باز ارسال پیام',
         'breadcrumb' => 'باز ارسال پیام',
         'subject_forward' => 'باز‌ارسال',
-    ]
+    ],
 ];

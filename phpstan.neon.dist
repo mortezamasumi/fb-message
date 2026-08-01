@@ -1,0 +1,22 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 8
+    paths:
+        - src
+    tmpDir: build/phpstan
+    ignoreErrors:
+        # jDateTime() is registered on Filament components at runtime by
+        # fb-essentials' macros, so PHPStan cannot resolve it statically.
+        - message: '#jDateTime\(\)#'
+          path: src
+        # availableRecipients() chains when()/where() through a macro-registered
+        # messageTo() scope, which PHPStan sees as a Builder; the runtime
+        # return value is always a MorphToMany (verified by tests).
+        - message: '#should return Illuminate\\Database\\Eloquent\\Relations\\MorphToMany#'
+          path: src
+        # messageTo() is a global query-builder macro registered by this
+        # package's service provider, so PHPStan cannot resolve it statically.
+        - message: '#Builder.*messageTo\(\)#'
+          path: src

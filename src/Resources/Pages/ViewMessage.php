@@ -2,10 +2,11 @@
 
 namespace Mortezamasumi\FbMessage\Resources\Pages;
 
-use Filament\Resources\Pages\ViewRecord;
 use Filament\Actions;
+use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Support\Facades\Auth;
 use Mortezamasumi\FbMessage\Facades\FbMessage;
+use Mortezamasumi\FbMessage\Models\FbMessage as FbMessageModel;
 use Mortezamasumi\FbMessage\Resources\FbMessageResource;
 
 class ViewMessage extends ViewRecord
@@ -14,20 +15,23 @@ class ViewMessage extends ViewRecord
 
     protected function getHeaderActions(): array
     {
-        FbMessage::markAsRead($this->getRecord());
+        /** @var FbMessageModel $record */
+        $record = $this->getRecord();
+
+        FbMessage::markAsRead($record);
 
         return [
             Actions\Action::make('reply')
                 ->label(__('fb-message::fb-message.actions.reply'))
                 ->color('gray')
-                ->url($this->getResource()::getUrl('reply', ['record' => $this->getRecord()]))
-                ->hidden($this->record->from()->wherePivot('user_id', Auth::id())->exists())
-                ->visible(Auth::user()->can('Reply:FbMessage')),
+                ->url($this->getResource()::getUrl('reply', ['record' => $record]))
+                ->hidden($record->from()->wherePivot('user_id', Auth::id())->exists())
+                ->visible(fn () => Auth::check() && Auth::user()?->can('Reply:FbMessage')),
             Actions\Action::make('forward')
                 ->label(__('fb-message::fb-message.actions.forward'))
                 ->color('gray')
-                ->url($this->getResource()::getUrl('forward', ['record' => $this->getRecord()]))
-                ->visible(Auth::user()->can('Forward:FbMessage')),
+                ->url($this->getResource()::getUrl('forward', ['record' => $record]))
+                ->visible(fn () => Auth::check() && Auth::user()?->can('Forward:FbMessage')),
             Actions\Action::make('return')
                 ->label(__('fb-message::fb-message.actions.return'))
                 ->color('gray')

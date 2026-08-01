@@ -32,7 +32,7 @@ class ListMessages extends ListRecords
                     ->icon($folder->getIcon());
 
                 if ($folder === MessageFolder::INBOX) {
-                    $tab->badge(__digit(FbMessage::whereRelation('unread', 'id', Auth::id())->count()));
+                    $tab->badge(__digit((string) FbMessage::whereRelation('unread', 'id', Auth::id())->count()));
                 }
 
                 return [$folder->value => $tab];

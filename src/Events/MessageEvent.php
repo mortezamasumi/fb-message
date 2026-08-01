@@ -14,6 +14,6 @@ class MessageEvent
     public function __construct(
         public FbMessage $message,
         public string $type,
-        public string|int $sender
+        public string|int|null $sender
     ) {}
 }

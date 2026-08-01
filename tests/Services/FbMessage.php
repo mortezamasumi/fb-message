@@ -10,4 +10,9 @@ use Mortezamasumi\FbMessage\Models\FbMessage as BaseFbMessage;
 class FbMessage extends BaseFbMessage
 {
     use HasFactory;
+
+    public function getMorphClass(): string
+    {
+        return BaseFbMessage::class;
+    }
 }

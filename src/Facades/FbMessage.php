@@ -2,16 +2,15 @@
 
 namespace Mortezamasumi\FbMessage\Facades;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static void markAsRead(Model $record)
- * @method statis void archive(Model $record)
- * @method statis void unarchive(Model $record)
- * @method statis void trash(Model $record)
- * @method statis void restore(Model $record)
- * @method statis void forget(Model $record)
+ * @method static void markAsRead(\Mortezamasumi\FbMessage\Models\FbMessage $record)
+ * @method static void archive(\Mortezamasumi\FbMessage\Models\FbMessage $record)
+ * @method static void unarchive(\Mortezamasumi\FbMessage\Models\FbMessage $record)
+ * @method static void trash(\Mortezamasumi\FbMessage\Models\FbMessage $record)
+ * @method static void restore(\Mortezamasumi\FbMessage\Models\FbMessage $record)
+ * @method static void forget(\Mortezamasumi\FbMessage\Models\FbMessage $record)
  *
  * @see \Mortezamasumi\FbMessage\FbMessage
  */

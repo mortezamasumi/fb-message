@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Mortezamasumi\FbMessage\Enums\MessageFolder;
 use Mortezamasumi\FbMessage\Enums\MessageType;
 use Mortezamasumi\FbMessage\Models\FbMessage;
-use Mortezamasumi\FbMessage\Tests\Services\User;
 
 class FbMessageFactory extends Factory
 {
