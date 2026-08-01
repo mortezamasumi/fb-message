@@ -8,12 +8,21 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Mortezamasumi\FbMessage\Enums\MessageFolder;
 use Mortezamasumi\FbMessage\Enums\MessageType;
 use Mortezamasumi\FbMessage\Models\Scopes\UserMessagesScope;
 use Mortezamasumi\FbMessage\Observers\MessageObserver;
 
+/**
+ * @property int $id
+ * @property string $subject
+ * @property string|null $body
+ * @property array<int, mixed>|null $attachments
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ */
 #[ObservedBy(MessageObserver::class)]
 #[ScopedBy(UserMessagesScope::class)]
 class FbMessage extends Model
